@@ -1,0 +1,276 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#101827">
+  <title>CryptoNetwork | BNB Smart Chain</title>
+  <style>
+    :root { color-scheme: dark; --bg:#0b1220; --panel:#121d30; --line:#26364e; --text:#edf4ff; --muted:#9fb0c8; --accent:#f0b90b; --green:#5ee0a0; --red:#ff8585; }
+    * { box-sizing:border-box; }
+    body { margin:0; background:radial-gradient(ellipse at top,#182b49 0,#0b1220 55%); color:var(--text); font:16px/1.5 system-ui,-apple-system,Segoe UI,Roboto,sans-serif; min-height:100vh; }
+    main { width:min(940px,100%); margin:auto; padding:28px 16px 48px; }
+    header { display:flex; align-items:center; gap:12px; margin-bottom:24px; }
+    .logo { display:grid; place-items:center; width:44px;height:44px;border-radius:14px;background:var(--accent);color:#171717;font-weight:900;font-size:21px; }
+    h1 { margin:0;font-size:clamp(23px,5vw,32px);letter-spacing:-.5px; }
+    .subtitle { margin:3px 0 0;color:var(--muted);font-size:14px; }
+    .top { display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:14px;margin-bottom:20px; }
+    .network { border:1px solid #5a4a18;background:#302912;color:#ffe38a;border-radius:999px;padding:7px 12px;font-size:13px; }
+    .grid { display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,250px),1fr));gap:14px; }
+    .card { background:rgba(18,29,48,.94);border:1px solid var(--line);border-radius:18px;padding:20px;box-shadow:0 12px 35px #0002; }
+    .card h2 { font-size:18px;margin:0 0 12px; }
+    .muted { color:var(--muted);font-size:14px; }
+    .balance { font-size:27px;font-weight:750;letter-spacing:-.5px;overflow-wrap:anywhere;margin:4px 0; }
+    button { appearance:none;border:0;border-radius:12px;padding:12px 16px;font-weight:750;font-size:15px;cursor:pointer;background:var(--accent);color:#171717; }
+    button.secondary { background:#263750;color:var(--text);border:1px solid #3a4c66; }
+    button:disabled { opacity:.55;cursor:not-allowed; }
+    .full { width:100%;margin-top:10px; }
+    label { display:block;font-size:13px;color:var(--muted);margin:13px 0 6px; }
+    input { width:100%;padding:12px;border-radius:10px;border:1px solid #354760;background:#0b1423;color:var(--text);font:inherit; }
+    .status { margin-top:16px;border:1px solid var(--line);border-radius:12px;padding:12px 14px;color:var(--muted);overflow-wrap:anywhere; }
+    .status.good { color:var(--green);border-color:#286a50; }
+    .status.bad { color:var(--red);border-color:#733b45; }
+    .address { font:12px/1.5 ui-monospace,SFMono-Regular,Consolas,monospace;overflow-wrap:anywhere;color:#c5d4e9; }
+    .notice { margin-top:16px;padding:14px;border-radius:12px;background:#252114;border:1px solid #5b4a20;color:#f5df9a;font-size:13px; }
+    footer { text-align:center;color:var(--muted);font-size:12px;margin-top:24px; }
+    a { color:#f5d45b; }
+    @media(max-width:480px){ main{padding:20px 12px 36px}.card{padding:16px} }
+  </style>
+</head>
+<body>
+<main>
+  <header>
+    <div class="logo">₿</div>
+    <div>
+      <h1>CryptoNetwork</h1>
+      <p class="subtitle">Wallet dashboard for BNB Smart Chain</p>
+    </div>
+  </header>
+
+  <div class="top">
+    <span class="network">● BNB Smart Chain · Chain ID 56</span>
+    <button id="connectBtn">Connect wallet</button>
+  </div>
+
+  <section class="grid">
+    <article class="card">
+      <h2>Wallet</h2>
+      <p class="muted">Connected account</p>
+      <div id="walletAddress" class="address">Not connected</div>
+      <button id="copyBtn" class="secondary full" disabled>Copy wallet address</button>
+    </article>
+    <article class="card">
+      <h2>BNB balance</h2>
+      <div id="bnbBalance" class="balance">— BNB</div>
+      <p class="muted">Native token used for network gas fees.</p>
+    </article>
+    <article class="card">
+      <h2>USDT balance</h2>
+      <div id="usdtBalance" class="balance">— USDT</div>
+      <p class="muted">BEP-20 USDT on BNB Smart Chain.</p>
+    </article>
+  </section>
+
+  <section class="card" style="margin-top:14px">
+    <h2>Deposit Address</h2>
+    <p class="muted">Fixed public receiving address on BNB Smart Chain (BEP-20). Confirm the network before sending funds.</p>
+    <div id="fixedDepositAddress" class="address">0xD04ac0B500CDAA1Ad5a85d4a31968eB960e66126</div>
+    <button id="copyDepositBtn" class="secondary full" type="button">Copy deposit address</button>
+  </section>
+
+  <section class="card" style="margin-top:14px">
+    <h2>Validate Wallet</h2>
+    <p class="muted">Connect your wallet to display its public address. The fixed receiving address is shown below. No transfer is initiated from this section.</p>
+    <label for="walletAddress">Connected wallet address</label>
+    <div id="walletAddress" class="address">Not connected</div>
+    <button id="copyBtn" class="secondary full" disabled type="button">Copy wallet address</button>
+    <div id="status" class="status" role="status" aria-live="polite">Connect a wallet to view its public address and balances.</div>
+    <div class="notice">Safety: never share your recovery phrase or private key. Verify the network and public receiving address before sending funds. This page does not need token approvals to display addresses or balances.</div>
+    <div hidden aria-hidden="true">
+      <label for="recipient">Recipient address</label>
+      <input id="recipient" inputmode="text" autocomplete="off" spellcheck="false">
+      <label for="amount">Amount (USDT)</label>
+      <input id="amount" inputmode="decimal" type="number" min="0.000001" step="any">
+      <button id="sendBtn" disabled type="button">Review and send USDT</button>
+    </div>
+  </section>
+
+  <footer>
+    USDT contract on BNB Smart Chain:
+    <span class="address">0x55d398326f99059fF775485246999027B3197955</span><br>
+    This is an independent demo interface, not an official BscScan website.
+  </footer>
+</main>
+<script>
+(() => {
+  "use strict";
+  const USDT = "0x55d398326f99059fF775485246999027B3197955";
+  const BSC_CHAIN_ID = "0x38";
+  const $ = (id) => document.getElementById(id);
+  let account = null;
+  let tokenDecimals = 18;
+
+  function status(message, kind = "") {
+    const el = $("status");
+    el.textContent = message;
+    el.className = "status" + (kind ? " " + kind : "");
+  }
+  function validAddress(value) {
+    return /^0x[a-fA-F0-9]{40}$/.test(value.trim());
+  }
+  function toHexAmount(amount) {
+    // Convert decimal input to an integer string without floating point rounding.
+    const parts = amount.trim().split(".");
+    const whole = parts[0] || "0";
+    const fraction = (parts[1] || "").padEnd(tokenDecimals, "0");
+    if (fraction.length > tokenDecimals) throw new Error("USDT supports at most " + tokenDecimals + " decimal places.");
+    const digits = (whole + fraction).replace(/^0+(?=\d)/, "");
+    const n = BigInt(digits || "0");
+    if (n <= 0n) throw new Error("Enter an amount greater than zero.");
+    return n.toString(16).padStart(64, "0");
+  }
+  async function rpc(method, params) {
+    return window.ethereum.request({ method, params });
+  }
+  async function ensureBsc() {
+    const chain = await rpc("eth_chainId", []);
+    if (chain !== BSC_CHAIN_ID) {
+      try {
+        await rpc("wallet_switchEthereumChain", [{ chainId: BSC_CHAIN_ID }]);
+      } catch (err) {
+        if (err && err.code === 4902) {
+          await rpc("wallet_addEthereumChain", [{
+            chainId: BSC_CHAIN_ID,
+            chainName: "BNB Smart Chain",
+            nativeCurrency: { name: "BNB", symbol: "BNB", decimals: 18 },
+            rpcUrls: ["https://bsc-dataseed.binance.org/"],
+            blockExplorerUrls: ["https://bscscan.com/"]
+          }]);
+        } else {
+          throw err;
+        }
+      }
+    }
+  }
+  async function refreshBalances() {
+    if (!account || !window.ethereum) return;
+    try {
+      const [bnbHex, tokenHex] = await Promise.all([
+        rpc("eth_getBalance", [account, "latest"]),
+        rpc("eth_call", [{ to: USDT, data: "0x70a08231" + account.slice(2).toLowerCase().padStart(64, "0") }, "latest"])
+      ]);
+      const bnb = Number(BigInt(bnbHex)) / 1e18;
+      const usdt = Number(BigInt(tokenHex)) / 1e18;
+      $("bnbBalance").textContent = bnb.toLocaleString(undefined, { maximumFractionDigits: 8 }) + " BNB";
+      $("usdtBalance").textContent = usdt.toLocaleString(undefined, { maximumFractionDigits: 6 }) + " USDT";
+      status("Wallet connected. Balances updated.", "good");
+    } catch (err) {
+      status("Could not load balances. Check that your wallet is connected to BNB Smart Chain and try again.", "bad");
+    }
+  }
+  async function connect() {
+    if (!window.ethereum) {
+      status("No compatible wallet was detected. Open this page in a wallet-enabled browser or use Trust Wallet's DApp browser.", "bad");
+      return;
+    }
+    try {
+      status("Waiting for wallet connection…");
+      const accounts = await rpc("eth_requestAccounts", []);
+      if (!accounts || !accounts.length) throw new Error("No account was selected.");
+      account = accounts[0];
+      $("walletAddress").textContent = account;
+      $("copyBtn").disabled = false;
+      $("sendBtn").disabled = false;
+      await ensureBsc();
+      await refreshBalances();
+    } catch (err) {
+      status(err && err.message ? err.message : "Wallet connection was cancelled.", "bad");
+    }
+  }
+  $("connectBtn").addEventListener("click", connect);
+  $("copyDepositBtn").addEventListener("click", async () => {
+    const address = $("fixedDepositAddress").textContent.trim();
+    try {
+      await navigator.clipboard.writeText(address);
+      status("Fixed deposit address copied.", "good");
+    } catch (_) {
+      status("Copy is unavailable in this browser. Press and hold the deposit address to copy it.");
+    }
+  });
+  $("copyBtn").addEventListener("click", async () => {
+    if (!account) return;
+    try {
+      await navigator.clipboard.writeText(account);
+      status("Wallet address copied.", "good");
+    } catch (_) {
+      status("Copy is unavailable in this browser. Press and hold the wallet address to copy it.");
+    }
+  });
+  $("sendBtn").addEventListener("click", async () => {
+    if (!account || !window.ethereum) {
+      status("Connect your wallet first.", "bad");
+      return;
+    }
+    const recipient = $("recipient").value.trim();
+    const amount = $("amount").value.trim();
+    if (!validAddress(recipient)) {
+      status("Enter a valid 0x recipient address.", "bad");
+      return;
+    }
+    if (!/^\d+(\.\d+)?$/.test(amount)) {
+      status("Enter a valid USDT amount.", "bad");
+      return;
+    }
+    let amountHex;
+    try { amountHex = toHexAmount(amount); }
+    catch (err) { status(err.message, "bad"); return; }
+    const displayAmount = String(Number(amount));
+    const approved = window.confirm(
+      "Confirm USDT transfer details:\n\nNetwork: BNB Smart Chain\nToken: USDT (BEP-20)\nAmount: " + displayAmount +
+      " USDT\nRecipient: " + recipient + "\n\nThis cannot generally be reversed. Continue to your wallet for final confirmation?"
+    );
+    if (!approved) { status("Transfer cancelled. No transaction was sent."); return; }
+    try {
+      await ensureBsc();
+      status("Check the transaction details in your wallet and confirm there to send.");
+      // ERC-20 transfer(address,uint256); wallet must show and approve the transaction.
+      const data = "0xa9059cbb" + recipient.slice(2).toLowerCase().padStart(64, "0") + amountHex;
+      const txHash = await rpc("eth_sendTransaction", [{
+        from: account,
+        to: USDT,
+        value: "0x0",
+        data
+      }]);
+      status("Transaction submitted. Hash: " + txHash + " — check its status on BscScan.", "good");
+      const link = document.createElement("a");
+      link.href = "https://bscscan.com/tx/" + encodeURIComponent(txHash);
+      link.target = "_blank";
+      link.rel = "noopener noreferrer";
+      link.textContent = " Open transaction on BscScan";
+      $("status").appendChild(document.createTextNode(" "));
+      $("status").appendChild(link);
+      setTimeout(refreshBalances, 5000);
+    } catch (err) {
+      status(err && err.message ? "Transaction not completed: " + err.message : "Transaction was not completed.", "bad");
+    }
+  });
+
+  if (window.ethereum) {
+    window.ethereum.on?.("accountsChanged", (accounts) => {
+      account = accounts && accounts.length ? accounts[0] : null;
+      $("walletAddress").textContent = account || "Not connected";
+      $("copyBtn").disabled = !account;
+      $("sendBtn").disabled = !account;
+      if (account) refreshBalances();
+      else {
+        $("bnbBalance").textContent = "— BNB";
+        $("usdtBalance").textContent = "— USDT";
+        status("Wallet disconnected.");
+      }
+    });
+    window.ethereum.on?.("chainChanged", () => window.location.reload());
+  }
+})();
+</script>
+</body>
+</html>
